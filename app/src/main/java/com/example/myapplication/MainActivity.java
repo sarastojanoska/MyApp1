@@ -1,16 +1,21 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 
 public class MainActivity extends Activity {
+    Context context;
+    public Context getContext(){
+        return context;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // setContentView(R.layout.activity_main);
-        finish();
+        context = this;
     }
 
     @Override
@@ -23,5 +28,6 @@ public class MainActivity extends Activity {
             ProcessMainClass bck = new ProcessMainClass();
             bck.launchService(getApplicationContext());
         }
+        finish();
     }
 }
