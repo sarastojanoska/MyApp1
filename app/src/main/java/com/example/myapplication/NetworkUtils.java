@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class NetworkUtils {
-    private static final String MY_BASE_URL = "http://10.0.2.2:5000/getJobs";
+    private static final String MY_BASE_URL = "http://192.168.0.101:5000/getjobs/hardware";
 
 
     private static final String LOG_TAG = NetworkUtils.class.getSimpleName();

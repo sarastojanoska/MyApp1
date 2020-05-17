@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -22,7 +21,7 @@ public class Service extends android.app.Service{
     public CheckMyNetwork check;
     public Context context;
     public int pingNumber = 0;
-    public final static int INTERVAL = 60*1000*10;
+    public final static int INTERVAL = 60*1000;
 
     public Service() { super(); }
 
@@ -44,11 +43,19 @@ public class Service extends android.app.Service{
         //counter = 0;
         if(network){
             Log.i("sara","Connected!!");
-            sleepDelay();
+            //sleepDelay();
+            Thread t = new Thread(){
+                public void run(){
+                    taskDelayLoop();
+                }
+            };
+            t.start();
+
         }
         else{
             Log.i("sara","Not Connected!!");
         }
+        Log.i("makeping","onStartCommand() is called");
         SharedPreferences prefs= getSharedPreferences("com.example.myapplication.ActiveServiceRunning", MODE_PRIVATE);
 
         if(prefs.getInt("timeCounter",0)!=0) {
@@ -66,6 +73,20 @@ public class Service extends android.app.Service{
 
         return START_STICKY;
     }
+    public void taskDelayLoop(){
+        while(true){
+
+            new AsyncTask(getApplicationContext()).execute();
+            Log.i("MAKEPING","doInBackground");
+            try{
+                Thread.sleep(INTERVAL);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -89,9 +110,25 @@ public class Service extends android.app.Service{
     public void onDestroy() {
         super.onDestroy();
         Log.i(TAG,"onDestroy called");
+        try {
+            SharedPreferences prefs = getSharedPreferences("com.example.qoscheckapp.ActiveServiceRunning", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            int timeCounter = 0;
+            editor.putInt("timeCounter", timeCounter);
+            editor.apply();
+
+        } catch (NullPointerException e) {
+            Log.e("SERVER", "Error " +e.getMessage());
+
+        }
         Intent broadcastIntent = new Intent(Globals.RESTART_INTENT);
         sendBroadcast(broadcastIntent);
         stoptimertask();
+        try{
+
+        } catch (NullPointerException e) {
+            Log.i("Server","are you testing?"+ e.getMessage());
+        }
     }
 
     @Override
@@ -102,18 +139,18 @@ public class Service extends android.app.Service{
         Intent broadcastIntent = new Intent(Globals.RESTART_INTENT);
         sendBroadcast(broadcastIntent);
     }
-    public void sleepDelay(){
-        final Handler handler = new Handler();
-        new AsyncTask().execute();
-        new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(this,INTERVAL);
-                Log.i("brr" , "");
-                new AsyncTask().execute();
-            }
-        }.run();
-    }
+    //public void sleepDelay(){
+      //  final Handler handler = new Handler();
+       // new AsyncTask().execute();
+        //new Runnable() {
+         //   @Override
+           // public void run() {
+             //   handler.postDelayed(this,INTERVAL);
+               // Log.i("brr" , "");
+                //new AsyncTask().execute();
+            //}
+        //}.run();
+    //}
 
 
     private static Timer timer;
