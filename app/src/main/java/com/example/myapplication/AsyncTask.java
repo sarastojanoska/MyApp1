@@ -25,7 +25,7 @@ public class AsyncTask extends android.os.AsyncTask<Void, Void, String> {
     @Override
     protected String doInBackground(Void... voids) {
         networkcheck = new CheckMyNetwork(mContext.getApplicationContext());
-
+        Top.doTop();
         Log.i("sara","do in background");
        // Random r = new Random();
         //int n = r.nextInt(51);
